@@ -2,6 +2,7 @@ import bodyParser from "body-parser";
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import userRouter from "./routes/userRoute.js";
 
 dotenv.config();
 
@@ -18,7 +19,7 @@ connection.once("open", () => {
     console.log("MongoDB database connection established successfully");
 })
 
-
+app.use("/api/users",userRouter)
 
 app.listen(3000, () => {
     console.log("Server is running on port 3000")
