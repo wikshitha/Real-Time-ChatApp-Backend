@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import userRouter from "./routes/userRoute.js";
 import jwt from "jsonwebtoken";
+import messageRouter from "./routes/messageRoute.js";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ connection.once("open", () => {
 })
 
 app.use("/api/users",userRouter)
+app.use("/api/messages",messageRouter)
 
 app.listen(3000, () => {
     console.log("Server is running on port 3000")
