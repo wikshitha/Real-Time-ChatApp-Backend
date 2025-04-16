@@ -3,12 +3,30 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import userRouter from "./routes/userRoute.js";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
 const app = express();
 
 app.use(bodyParser.json());
+app.use((req,res,next)=>{
+    let token = req.header
+    ("Authorization");
+
+    if(token !=null){
+        token = token.replace("Bearer ","");
+
+        jwt.verify(token,process.env.JWT_SECRET,
+            (err,decoded)=>{
+                if(!err){
+                    req.user = decoded;
+            }
+        }
+        )
+    }
+    next();
+})
 
 let mongoUrl = process.env.MONGO_URL;
 
