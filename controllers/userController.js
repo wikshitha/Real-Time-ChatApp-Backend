@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import cloudinary from "../cloudinary.js";
 
 dotenv.config()
 
@@ -57,7 +58,7 @@ export function loginUser(req,res) {
 
 export async function updateUser(req,res) {
     const email = req.params.email;
-    const data = req.body;
+    const {profilePic, firstName, lastName} = req.body;
 
     if(req.user == null) {
         res.status(401).json({
@@ -65,19 +66,36 @@ export async function updateUser(req,res) {
         })
         return;
     }
+    if(!profilePic) {
+        res.status(400).json({
+            message : "Profile Pic is Required"
+        })
+        return;
+    }
+    if(!firstName) {
+        res.status(400).json({
+            message : "First Name is Required"
+        })
+        return;
+    }
+    if(!lastName) {
+        res.status(400).json({
+            message : "Last Name is Required"
+        })
+        return;
+    }
+
     try {
         if(req.user.email == email) {
-            await User.updateOne({
-                email : email
-            }, data)
+           const uploadResponse = await cloudinary.uploader.upload(profilePic)
 
-            res.json({
-                message : "User Updated Successfully"
-            })
-        } else {
-            res.status(401).json({
-                message : "Unauthorized Access"
-            })
+           const updatedUser = await User.findByIdAndUpdate(email, {
+            firstName,
+            lastName,
+            profilePic : uploadResponse.secure_url
+           }, {new : true})
+
+           res.json(updatedUser)
         }
 
     } catch (error) {
