@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import messageRouter from "./routes/messageRoute.js";
 import cors from "cors";
 
+
 dotenv.config();
 
 const app = express();
@@ -40,6 +41,7 @@ let connection = mongoose.connection;
 connection.once("open", () => {
     console.log("MongoDB database connection established successfully");
 })
+
 
 app.use("/api/users",userRouter)
 app.use("/api/messages",messageRouter)
