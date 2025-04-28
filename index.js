@@ -5,10 +5,13 @@ import mongoose from "mongoose";
 import userRouter from "./routes/userRoute.js";
 import jwt from "jsonwebtoken";
 import messageRouter from "./routes/messageRoute.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
+
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use((req,res,next)=>{
