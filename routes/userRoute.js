@@ -9,6 +9,6 @@ userRouter.post("/login",loginUser)
 
 userRouter.put("/:email",updateUser)
 
-userRouter.get("/check",checkAuth)
+userRouter.get("/check", checkAuth)
 
 export default userRouter

@@ -106,13 +106,6 @@ export async function updateUser(req,res) {
 }
 
 export function checkAuth(req,res) {
- 
-    if(req.user == null) {
-        res.status(401).json({
-            message : "Please Login First"
-        })
-        return;
-    }
     try{
         res.json(req.user)
     }catch(err) {
