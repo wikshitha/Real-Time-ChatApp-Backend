@@ -7,7 +7,7 @@ userRouter.post("/register",registerUser)
 
 userRouter.post("/login",loginUser)
 
-userRouter.put("/:email",updateUser)
+userRouter.put("/update",updateUser)
 
 userRouter.get("/check", checkAuth)
 

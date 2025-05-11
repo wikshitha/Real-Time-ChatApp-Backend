@@ -72,26 +72,11 @@ export async function updateUser(req,res) {
         })
         return;
     }
-    if(!firstName) {
-        res.status(400).json({
-            message : "First Name is Required"
-        })
-        return;
-    }
-    if(!lastName) {
-        res.status(400).json({
-            message : "Last Name is Required"
-        })
-        return;
-    }
-
     try {
         if(req.user.email == email) {
            const uploadResponse = await cloudinary.uploader.upload(profilePic)
 
            const updatedUser = await User.findByIdAndUpdate(email, {
-            firstName,
-            lastName,
             profilePic : uploadResponse.secure_url
            }, {new : true})
 
