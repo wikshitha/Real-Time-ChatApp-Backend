@@ -39,13 +39,15 @@ export function loginUser(req,res) {
                 const token = jwt.sign({
                     email : user.email,
                     firstName : user.firstName,
-                    lastNamme : user.lastName,
+                    lastName : user.lastName,
                     profilePic : user.profilePic
                 },process.env.JWT_SECRET)
                 
                 res.json({
                     message : "User Logged In Successfully",
-                    token : token
+                    token : token,
+                    user : user
+                    
                 })
             }else {
                 res.status(401).json({
@@ -58,7 +60,7 @@ export function loginUser(req,res) {
 
 export async function updateUser(req,res) {
     const email = req.params.email;
-    const {profilePic, firstName, lastName} = req.body;
+    const {profilePic} = req.body;
 
     if(req.user == null) {
         res.status(401).json({
