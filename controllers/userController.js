@@ -46,8 +46,7 @@ export function loginUser(req,res) {
                 res.json({
                     message : "User Logged In Successfully",
                     token : token,
-                    user : user
-                    
+                    user : user   
                 })
             }else {
                 res.status(401).json({
@@ -75,26 +74,31 @@ export async function updateUser(req,res) {
         return;
     }
     try {
-        if(req.user.email == email) {
+    
            const uploadResponse = await cloudinary.uploader.upload(profilePic)
 
-           const updatedUser = await User.findByIdAndUpdate(email, {
+           const updatedUser = await User.findByIdAndUpdate(req.user._id, {
             profilePic : uploadResponse.secure_url
            }, {new : true})
 
-           res.json(updatedUser)
-        }
+           res.json ({
+            message : "User Updated Successfully",
+            user : updatedUser
+           }
+           )
+        
 
     } catch (error) {
+        console.error("update error", error)
      res.status(500).json({
-        message : "User Updation Failed"
+       message : "Error Updating User"
      })   
     }
 }
 
 export function checkAuth(req,res) {
     try{
-        res.json(req.user)
+        res.json({ user: req.user });
     }catch(err) {
         console.log(err)
         res.status(500).json({
