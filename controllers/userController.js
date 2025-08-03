@@ -57,52 +57,58 @@ export function loginUser(req,res) {
     })
 }
 
-export async function updateUser(req,res) {
-    const email = req.params.email;
-    const {profilePic} = req.body;
-
-    if(req.user == null) {
-        res.status(401).json({
-            message : "Pleace Login First"  
-        })
-        return;
+export async function updateUser(req, res) {
+    const { profilePic } = req.body;
+    const email = req.user?.email;
+  
+    if (!req.user) {
+      return res.status(401).json({ message: "Please login first" });
     }
-    if(!profilePic) {
-        res.status(400).json({
-            message : "Profile Pic is Required"
-        })
-        return;
+  
+    if (!profilePic) {
+      return res.status(400).json({ message: "Profile Pic is required" });
     }
+  
     try {
-    
-           const uploadResponse = await cloudinary.uploader.upload(profilePic)
-
-           const updatedUser = await User.findByIdAndUpdate(req.user._id, {
-            profilePic : uploadResponse.secure_url
-           }, {new : true})
-
-           res.json ({
-            message : "User Updated Successfully",
-            user : updatedUser
-           }
-           )
-        
-
+      const uploadResponse = await cloudinary.uploader.upload(profilePic);
+  
+      // ✅ only update profilePic, do not overwrite other fields
+      await User.updateOne(
+        { email },
+        { $set: { profilePic: uploadResponse.secure_url } }
+      );
+  
+      // ✅ fetch full user again
+      const updatedUser = await User.findOne({ email });
+  
+      res.json({
+        message: "User Updated Successfully",
+        user: updatedUser,
+      });
     } catch (error) {
-        console.error("update error", error)
-     res.status(500).json({
-       message : "Error Updating User"
-     })   
+      console.error("Update failed:", error);
+      res.status(500).json({ message: "User update failed" });
     }
-}
+  }
+  
 
-export function checkAuth(req,res) {
-    try{
-        res.json({ user: req.user });
-    }catch(err) {
-        console.log(err)
-        res.status(500).json({
-            message : "User Not Found"
-        })
+  export async function checkAuth(req, res) {
+    try {
+      const email = req.user?.email;
+      if (!email) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+  
+      // ✅ Fetch full, up-to-date user data from DB
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      res.json({ user }); // ✅ Now frontend gets correct profilePic too
+    } catch (err) {
+      console.log("Error in checkAuth:", err);
+      res.status(500).json({ message: "Internal server error" });
     }
-}
+  }
+  
