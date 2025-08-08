@@ -51,8 +51,8 @@ export async function sendMessage(req,res) {
 
     try {
         const { text, image } = req.body;
-        const { id: receiverId } = req.params;
-        const senderId = req.user._id;
+        const { id: receiverID } = req.params; // ✅ match schema exactly
+        const senderID = req.user._id; 
 
         let imageURL;
 
@@ -60,13 +60,15 @@ export async function sendMessage(req,res) {
             const uploadResponse = await cloudinary.uploader.upload(image);
             imageURL = uploadResponse.secure_url
         }
-
+               // ✅ match schema exactly
+        
         const newMessage = new Message({
-            senderId,
-            receiverId,
-            text,
-            image: imageURL
-        })
+          senderID,
+          receiverID,
+          text,
+          image: imageURL
+        });
+        
 
         await newMessage.save();
 
@@ -74,6 +76,7 @@ export async function sendMessage(req,res) {
 
         res.json(newMessage)
     } catch (error) {
+        console.log(error);
         res.status(500).json({message : "Error Sending Message"})
     }
 }
