@@ -6,11 +6,10 @@ import userRouter from "./routes/userRoute.js";
 import jwt from "jsonwebtoken";
 import messageRouter from "./routes/messageRoute.js";
 import cors from "cors";
+import { app, server } from "./lib/socket.js";
 
 
 dotenv.config();
-
-const app = express();
 
 app.use(cors());
 
@@ -48,6 +47,6 @@ connection.once("open", () => {
 app.use("/api/users",userRouter)
 app.use("/api/messages",messageRouter)
 
-app.listen(3000, () => {
+server.listen(3000, () => {
     console.log("Server is running on port 3000")
 });
